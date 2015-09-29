@@ -12,6 +12,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cmath>
 using namespace std;
 
 
@@ -57,6 +58,8 @@ public:
         //checks if node has already been expanded
         bool isExpanded();
         
+        int getHuristicValue();
+        
     private:
         //pointer to associated maze
         Maze * maze;
@@ -77,6 +80,8 @@ public:
         
         //delets current node and all children
         void deleteme();
+        
+        int Hvalue;
         
         
         
@@ -107,10 +112,14 @@ public:
     
     bool changeChar(int x, int y, char c);
     
+    
 private:
     vector <string> cMap;
     int Xsize = 0;
     int Ysize = 0;
+    
+    xyCord goalLocation;
+    xyCord  startLocation;
 };
 
 

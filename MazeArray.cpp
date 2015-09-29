@@ -17,6 +17,7 @@ Maze::Node::Node(int X, int Y, Maze * m, Node * p)
     location.y = Y;
     maze = m;
     parent = p;
+    Hvalue = abs(maze->getGoalLocation().x -X ) + abs(maze->getGoalLocation().y -Y);
 }
 
 Maze::Node::Node(xyCord loc, Maze * m, Node * p)
@@ -24,8 +25,13 @@ Maze::Node::Node(xyCord loc, Maze * m, Node * p)
     location = loc;
     maze = m;;
     parent = p;
+    Hvalue = abs(maze->getGoalLocation().x - loc.x ) + abs(maze->getGoalLocation().y - loc.y);
 }
 
+int Maze::Node::getHuristicValue()
+{
+    return Hvalue;
+}
 
 xyCord Maze::Node::getxyCord()
 {
@@ -185,8 +191,41 @@ Maze::Maze(string pathname)
     }
     Xsize = (int)(cMap[0].size() - 1);
     Ysize = (int)cMap.size();
-    
     inFile.close();
+    
+    
+    //initialize goallocation and endlocation
+    
+    goalLocation.x = -1;
+    goalLocation.y = -1;
+    
+    startLocation.x = -1;
+    startLocation.y = -1;
+    
+    if((Xsize <= 0) || (Ysize<=0))
+    {
+        return;
+    }
+    
+    for(int x = 0; x < Xsize; x++)
+    {
+        for(int y = 0; y < Ysize; y++)
+        {
+            if(cMap[y][x] == '.')
+            {
+                goalLocation.x = x;
+                goalLocation.y = y;
+            }
+            
+            if(cMap[y][x] == 'P')
+            {
+                startLocation.x = x;
+                startLocation.y = y;
+            }
+        }
+    }
+    
+    
 
 }
 
@@ -228,46 +267,18 @@ Maze::Node * Maze::getStartNode()
         return NULL;
     }
     
-    for(int x = 0; x < Xsize; x++)
-    {
-        for(int y = 0; y < Ysize; y++)
-        {
-          if(cMap[y][x] == 'P')
-              return new Node(x,y,this, NULL);
-        }
-    }
     
-    //if it gets here no "P" found so return error
-    return NULL;
+    return new Node(startLocation,this, NULL);
+
+
+    
 }
 
 
 
 xyCord Maze::getGoalLocation()
 {
-    xyCord temp;
-    temp.x = -1;
-    temp.y = -1;
-    
-    if((Xsize <= 0) || (Ysize<=0))
-    {
-        return temp;
-    }
-    
-    for(int x = 0; x < Xsize; x++)
-    {
-        for(int y = 0; y < Ysize; y++)
-        {
-            if(cMap[y][x] == '.')
-            {
-                temp.x = x;
-                temp.y = y;
-                return temp;
-            }
-        }
-    }
-    //return error if no period
-    return temp;
+    return goalLocation;
 }
 
 bool Maze::changeChar(int x, int y, char c)
