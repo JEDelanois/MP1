@@ -28,9 +28,6 @@ private:
 
 
 
-
-
-
 class Maze // needs copy constructor but that functionality will not be used so screw it
 {
 public:
@@ -41,7 +38,7 @@ public:
     public:
         Node(int x, int y, Maze * m, Node * p);
         Node(xyCord loc, Maze * m, Node * p);
-        
+        ~Node();
         // gets cordinats of
         xyCord getxyCord();
         
@@ -55,6 +52,10 @@ public:
         Node * getEastChild();
         Node * getSouthChild();
         Node * getWestChild();
+        
+        
+        //checks if node has already been expanded
+        bool isExpanded();
         
     private:
         //pointer to associated maze
@@ -71,11 +72,20 @@ public:
         Node * WestChild = NULL;
         
         
+        //expanded chedk
+        bool isexpanded = false;
+        
+        //delets current node and all children
+        void deleteme();
+        
+        
+        
+        
         
     };
     
     
-
+    
     
     Maze(string pathname);
     
@@ -89,9 +99,13 @@ public:
     /*returns a string of a copy of the maze*/
     string PrintMaze();
     
+    //Redturns location of goal state
+    xyCord getGoalLocation();
     
     //returns starting node
     Node * getStartNode();
+    
+    bool changeChar(int x, int y, char c);
     
 private:
     vector <string> cMap;
@@ -106,9 +120,31 @@ private:
 
 class World
 {
+    
+
+    
 public:
+    World(string s);
+    ~World();
+    
+    bool runDFS();
     
 private:
+    
+    void printSol();
+    bool DFS(Maze::Node * curr_node);//function for DFS on rest of nodes
+    bool BFS(Maze::Node * curr_node);
+    
+    bool ** check;
+    Maze * maze;
+    xyCord goal_coord;
+    Maze::Node * start;
+    Maze::Node * endNode;
+    
+    string path;
+    void makeWorld(string s);
+    void deleteWorld();
+    
     
     
 };
