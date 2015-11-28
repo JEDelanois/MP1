@@ -414,6 +414,76 @@ bool World::DFS(Maze::Node * curr_node)
     
 }
 
+bool World::runBFS()
+{
+    //refresh maze of old data
+    deleteWorld();
+    makeWorld(path);
+    if ((maze == NULL) || (start == NULL) || (check == NULL))
+        return false;
+    /*	maze->changeChar(start->getxyCord().x, start->getxyCord().y, 'a');
+     maze->changeChar(goal_coord.x, goal_coord.y, 'Y');*/
+    cout << "Given Maze:" << endl << maze->PrintMaze() << endl << endl;
+    
+    if (BFS(start))
+    {
+        cout << "Solution Maze:" << endl;
+        printSol();
+        return true;
+    }
+    
+    cout << "No solution found" << endl;
+    
+    return false;
+}
+
+bool World::BFS(Maze::Node * curr_node)
+{
+    if (curr_node == NULL)
+        return false;
+    
+    list<Maze::Node*> queue;    //queue for BFS
+    
+    queue.push_back(curr_node);	//add first node to queue
+    
+    while (!queue.empty())
+    {
+        curr_node = queue.front();  //update current node being looked at
+        queue.pop_front();
+        check[curr_node->getxyCord().x][curr_node->getxyCord().y] = true;	//mark node as visited
+        
+        maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
+        cout << maze->PrintMaze()<<endl<<endl<<endl;
+        
+        
+        //check for solution
+        if ((curr_node->getxyCord().x == goal_coord.x) && (curr_node->getxyCord().y == goal_coord.y))
+        {
+            endNode = curr_node;   //save coordinates of goal node
+            return true;
+        }
+        curr_node->expandNode();          //expand node to use children
+        expansions++;					  //update number of node expansions
+        				  //remove from queue
+        
+        //if unexplored and not a wall, add it to the queue
+        if (curr_node->getNorhChild() != NULL && check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] == false)
+            queue.push_back(curr_node->getNorhChild());
+        
+        if (curr_node->getEastChild() != NULL && check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] == false)
+            queue.push_back(curr_node->getEastChild());
+        
+        if (curr_node->getSouthChild() != NULL && check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] == false)
+            queue.push_back(curr_node->getSouthChild());
+        
+        if (curr_node->getWestChild() != NULL && check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] == false)
+            queue.push_back(curr_node->getWestChild());
+        
+    }
+    return false;
+}
+
+
 /*
 World::BFS(Node *node, Maze *maze)
 {

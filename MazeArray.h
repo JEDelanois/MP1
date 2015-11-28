@@ -13,6 +13,7 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <list>
 using namespace std;
 
 
@@ -137,6 +138,8 @@ public:
     ~World();
     
     bool runDFS();
+    bool runBFS();
+    int expansions;
     
 private:
     
