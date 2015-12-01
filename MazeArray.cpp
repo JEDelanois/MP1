@@ -10,6 +10,7 @@
 using namespace std;
 
 
+
 //NODE
 Maze::Node::Node(int X, int Y, Maze * m, Node * p)
 {
@@ -52,20 +53,100 @@ void Maze::Node::expandNode()
     if((location.x < 0)||(location.x >= maze->getXsize() )||(location.y < 0 )||(location.y >= maze->getYsize() ))
         return;
     
+    
+    vector<Ghost> childGhosts;
+    //get new ghosts
+    if(parent != NULL)
+    {
+        for (int i = 0; i < (int)parent->currGhosts.size(); i++)
+        {
+            Ghost temp = parent->currGhosts[i];
+            
+            if(temp.direction ==  0)// if moving left idk why i cannotuse macros here
+            {
+                if(maze->getChar(temp.pos.x - 1, temp.pos.y) != '%')// if not a wall then continue in that direction
+                {
+                    //save last location
+                    temp.lastpos.x = temp.pos.x;
+                    temp.lastpos.y = temp.pos.y;
+                    
+                    //move to new location
+                    temp.pos.x = temp.pos.x - 1;
+                    temp.pos.y = temp.pos.y;
+                }
+                else{//flip directions
+                    
+                    //save last location
+                    temp.lastpos.x = temp.pos.x;
+                    temp.lastpos.y = temp.pos.y;
+                    
+                    //move to new location
+                    temp.pos.x = temp.pos.x + 1;
+                    temp.pos.y = temp.pos.y;
+                    
+                    temp.direction = (int)RIGHT;
+                }
+                
+            }
+            else{ //else if moving right
+            
+                if(maze->getChar(temp.pos.x + 1, temp.pos.y) != '%')// if not a wall then continue in that direction
+                {
+                    //save last location
+                    temp.lastpos.x = temp.pos.x;
+                    temp.lastpos.y = temp.pos.y;
+                    
+                    //move to new location
+                    temp.pos.x = temp.pos.x + 1;
+                    temp.pos.y = temp.pos.y;
+                }
+                else{//flip directions
+                    
+                    //save last location
+                    temp.lastpos.x = temp.pos.x;
+                    temp.lastpos.y = temp.pos.y;
+                    
+                    //move to new location
+                    temp.pos.x = temp.pos.x - 1;
+                    temp.pos.y = temp.pos.y;
+                    
+                    temp.direction = (int)LEFT;
+                }
+            
+            }
+            childGhosts.push_back(temp);
+        }
+    }
+    
+    
+    
     //get north child
     if( ((location.y -1) >= 0) ) // check if in bounds
     {
-        if(maze->getChar(location.x, location.y-1) != '%' )// if there is a space add child
+        if(maze->getChar(location.x, location.y-1) != '%' )// no wall there
         {
+            bool ghost = false;
+            //if the child coresponds to ghost node then make it null
+            for(int i = 0; i < (int)childGhosts.size(); i++ )
+            {
+                if((childGhosts[i].pos.x == location.x) && (childGhosts[i].pos.y == location.y-1) )
+                    ghost = true;
+                else if((childGhosts[i].lastpos.x == location.x) && (childGhosts[i].lastpos.y == location.y-1) )
+                    ghost = true;
+            }
     
-            if(parent == NULL)// if no parent add child
+            if(parent == NULL)// if no parent (meanin root) add child
                 NorhChild = new Node(location.x,location.y-1, maze, this);
             
-            else if((parent->location.x == location.x ) && (parent->location.y == location.y-1)  )//if node matches parent dont add
+            else if(((parent->location.x == location.x ) && (parent->location.y == location.y-1)) || (ghost)  )//if node matches parent dont add or if there is a ghost dont add
                 NorhChild = NULL;
             
             else
-                NorhChild =new Node(location.x,location.y-1, maze, this);
+                NorhChild = new Node(location.x,location.y-1, maze, this);
+            
+            if(NorhChild != NULL)
+                NorhChild->currGhosts = childGhosts;
+            
         }
     }
     
@@ -75,14 +156,28 @@ void Maze::Node::expandNode()
     {
         if(maze->getChar(location.x+1, location.y) != '%' )// if there is a space add child
         {
+            
+            bool ghost = false;
+            //if the child coresponds to ghost node then make it null
+            for(int i = 0; i < (int)childGhosts.size(); i++ )
+            {
+                if((childGhosts[i].pos.x == location.x + 1) && (childGhosts[i].pos.y == location.y) )
+                    ghost = true;
+                else if((childGhosts[i].lastpos.x == location.x + 1) && (childGhosts[i].lastpos.y == location.y) )
+                    ghost = true;
+            }
+            
             if(parent == NULL)
                 EastChild = new Node(location.x+1, location.y, maze, this );
         
-            else if( (parent->location.x == location.x+1 ) && (parent->location.y == location.y)  )
+            else if( ((parent->location.x == location.x+1 ) && (parent->location.y == location.y)) || (ghost)  )
                 EastChild = NULL;
             
             else
                 EastChild = new Node(location.x+1, location.y, maze, this );
+            
+            if(EastChild != NULL)
+                EastChild->currGhosts = childGhosts;
         }
     }
     
@@ -92,14 +187,29 @@ void Maze::Node::expandNode()
     {
         if(maze->getChar(location.x, location.y+1) != '%' )// if there is a space add child
         {
+            bool ghost = false;
+            //if the child coresponds to ghost node then make it null
+            for(int i = 0; i < (int)childGhosts.size(); i++ )
+            {
+                if((childGhosts[i].pos.x == location.x) && (childGhosts[i].pos.y == location.y + 1) )
+                    ghost = true;
+                else if((childGhosts[i].lastpos.x == location.x) && (childGhosts[i].lastpos.y == location.y + 1) )
+                    ghost = true;
+            }
+            
+            
             if(parent == NULL)
                 SouthChild = new Node (location.x, location.y +1, maze, this);
         
-            else if((parent->location.x == location.x ) && (parent->location.y == location.y + 1))
+            else if(((parent->location.x == location.x ) && (parent->location.y == location.y + 1)) || (ghost) )
                 SouthChild = NULL;
         
             else
                 SouthChild = new Node (location.x, location.y +1, maze, this);
+            
+            
+            if(SouthChild != NULL)
+                SouthChild->currGhosts = childGhosts;
         }
 
     }
@@ -109,14 +219,28 @@ void Maze::Node::expandNode()
     {
         if(maze->getChar(location.x-1, location.y) != '%' )// if there is a space add child
         {
+            bool ghost = false;
+            //if the child coresponds to ghost node then make it null
+            for(int i = 0; i < (int)childGhosts.size(); i++ )
+            {
+                if((childGhosts[i].pos.x == location.x -1 ) && (childGhosts[i].pos.y == location.y) )
+                    ghost = true;
+                else if((childGhosts[i].lastpos.x == location.x - 1) && (childGhosts[i].lastpos.y == location.y) )
+                    ghost = true;
+            }
+            
+            
             if(parent == NULL)
                 WestChild = new Node(location.x -1,location.y, maze,this);
         
-            else if((parent->location.x == location.x - 1) && (parent->location.y == location.y))
+            else if(((parent->location.x == location.x - 1) && (parent->location.y == location.y)) || (ghost))
                 WestChild = NULL;
         
             else
                 WestChild = new Node(location.x -1,location.y, maze,this);
+            
+            if(WestChild != NULL)
+                WestChild->currGhosts = childGhosts;
         }
         
         
@@ -155,6 +279,15 @@ Maze::Node::~Node()
 {
     deleteme();
 }
+
+
+
+int Maze::Node::getGhostVal()
+{
+    return ghostVal;
+}
+
+
 
 void Maze::Node::deleteme()
 {
@@ -222,6 +355,17 @@ Maze::Maze(string pathname)
                 startLocation.x = x;
                 startLocation.y = y;
             }
+            if(cMap[y][x] == 'G')
+            {
+                Ghost g;
+                g.pos.x = x;
+                g.pos.y = y;
+                g.lastpos.x = -1;
+                g.lastpos.y = -1;
+                g.direction = (int)LEFT;
+                
+                startGhosts.push_back(g);
+            }
         }
     }
     
@@ -268,7 +412,12 @@ Maze::Node * Maze::getStartNode()
     }
     
     
-    return new Node(startLocation,this, NULL);
+    Node * temp = new Node(startLocation,this, NULL);
+    
+    temp->currGhosts = startGhosts; // get the starting positions of the new ghosts
+    
+    
+    return temp;
 
 
     

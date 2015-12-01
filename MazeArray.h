@@ -14,6 +14,14 @@
 #include <vector>
 #include <cmath>
 #include <list>
+
+#define LEFT 0;
+#define RIGHT 1;
+
+#define G 2; //ghost
+#define PG 1; // ghost was just there path still dies
+#define NG 0; // no ghost
+
 using namespace std;
 
 
@@ -23,8 +31,18 @@ public:
     int x;
     int y;
     
+    
 private:
     
+    
+};
+
+class Ghost{
+    
+public:
+    xyCord pos;
+    xyCord lastpos;
+    int direction;
     
 };
 
@@ -61,6 +79,11 @@ public:
         
         int getHuristicValue();
         
+        int getGhostVal();
+        
+        
+        vector<Ghost> currGhosts;
+        
     private:
         //pointer to associated maze
         Maze * maze;
@@ -82,12 +105,9 @@ public:
         //delets current node and all children
         void deleteme();
         
+        int ghostVal = (int)NG;
+        
         int Hvalue;
-        
-        
-        
-        
-        
     };
     
     
@@ -111,6 +131,8 @@ public:
     //returns starting node
     Node * getStartNode();
     
+    vector<Ghost> getStartGhosts;
+    
     bool changeChar(int x, int y, char c);
     
     
@@ -121,6 +143,7 @@ private:
     
     xyCord goalLocation;
     xyCord  startLocation;
+    vector<Ghost> startGhosts;
 };
 
 
