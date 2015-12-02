@@ -594,12 +594,13 @@ bool World::BFS(Maze::Node * curr_node)
     list<Maze::Node*> queue;    //queue for BFS
     
     queue.push_back(curr_node);	//add first node to queue
+    check[curr_node->getxyCord().x][curr_node->getxyCord().y] = true;	//mark node as visited
     
     while (!queue.empty())
     {
         curr_node = queue.front();  //update current node being looked at
         queue.pop_front();
-        check[curr_node->getxyCord().x][curr_node->getxyCord().y] = true;	//mark node as visited
+        
         
         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
         cout << maze->PrintMaze()<<endl<<endl<<endl;
@@ -616,17 +617,25 @@ bool World::BFS(Maze::Node * curr_node)
         
         
         //if unexplored and not a wall, add it to the queue
-        if (curr_node->getNorhChild() != NULL && check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] == false)
+        if ((curr_node->getNorhChild() != NULL) && (check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] == false)){
             queue.push_back(curr_node->getNorhChild());
+            check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
-        if (curr_node->getEastChild() != NULL && check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] == false)
+        if ((curr_node->getEastChild() != NULL) && (check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] == false)){
             queue.push_back(curr_node->getEastChild());
+            check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
-        if (curr_node->getSouthChild() != NULL && check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] == false)
+        if ((curr_node->getSouthChild() != NULL) && (check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] == false)){
             queue.push_back(curr_node->getSouthChild());
+            check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
-        if (curr_node->getWestChild() != NULL && check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] == false)
+        if ((curr_node->getWestChild() != NULL) && (check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] == false)){
             queue.push_back(curr_node->getWestChild());
+            check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
     }
     return false;
@@ -665,6 +674,7 @@ bool World::Greedy(Maze::Node *curr_node)
     vector<Maze::Node*> frontier;    //queue for BFS
     
     frontier.push_back(curr_node);	//add first node to queue
+    check[curr_node->getxyCord().x][curr_node->getxyCord().y] = true;
     
     while (!frontier.empty())
     {
@@ -675,8 +685,6 @@ bool World::Greedy(Maze::Node *curr_node)
             {
                 if(frontier[i +1]->getHuristicValue() > frontier[i]->getHuristicValue())
                 {
-                    int a =  frontier[i +1]->getHuristicValue();
-                    int b = frontier[i]->getHuristicValue();
                     Maze::Node * temp = frontier[i +1];
                     frontier[i +1] = frontier[i];
                     frontier[i] = temp;
@@ -688,12 +696,11 @@ bool World::Greedy(Maze::Node *curr_node)
         curr_node = frontier.back();
         frontier.pop_back();  //update current node being looked at
        
-        int xx = curr_node->getxyCord().x;
-        int yy = curr_node->getxyCord().y;
-        check[curr_node->getxyCord().x][curr_node->getxyCord().y] = true;	//mark node as visited
         
+        /*
         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
         cout << maze->PrintMaze()<<endl<<endl<<endl;
+         */
         
         
         //check for solution
@@ -708,17 +715,25 @@ bool World::Greedy(Maze::Node *curr_node)
         
         
         //if unexplored and not a wall, add it to the queue
-        if ((curr_node->getNorhChild() != NULL) && (check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] == false))
+        if ((curr_node->getNorhChild() != NULL) && (check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] == false)){
             frontier.push_back(curr_node->getNorhChild());
+            check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
-        if ((curr_node->getEastChild() != NULL) && (check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] == false))
+        if ((curr_node->getEastChild() != NULL) && (check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] == false)){
             frontier.push_back(curr_node->getEastChild());
+            check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
-        if ((curr_node->getSouthChild() != NULL) && (check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] == false))
+        if ((curr_node->getSouthChild() != NULL) && (check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] == false)){
             frontier.push_back(curr_node->getSouthChild());
+            check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
-        if ((curr_node->getWestChild() != NULL) && (check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] == false))
+        if ((curr_node->getWestChild() != NULL) && (check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] == false)){
             frontier.push_back(curr_node->getWestChild());
+            check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] = true;	//mark node as visited
+        }
         
        
         
