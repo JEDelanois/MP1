@@ -82,6 +82,7 @@ public:
         int getGhostVal();
         
         
+        
         vector<Ghost> currGhosts;
         
     private:
@@ -108,6 +109,7 @@ public:
         int ghostVal = (int)NG;
         
         int Hvalue;
+        int Astarval;
     };
     
     
@@ -162,6 +164,7 @@ public:
     
     bool runDFS();
     bool runBFS();
+    bool runGreedy();
     int expansions;
     
 private:
@@ -169,7 +172,7 @@ private:
     void printSol();
     bool DFS(Maze::Node * curr_node);//function for DFS on rest of nodes
     bool BFS(Maze::Node * curr_node);
-    
+    bool Greedy(Maze::Node * curr_node);
     bool ** check;
     Maze * maze;
     xyCord goal_coord;

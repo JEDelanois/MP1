@@ -613,7 +613,7 @@ bool World::BFS(Maze::Node * curr_node)
         }
         curr_node->expandNode();          //expand node to use children
         expansions++;					  //update number of node expansions
-        				  //remove from queue
+        
         
         //if unexplored and not a wall, add it to the queue
         if (curr_node->getNorhChild() != NULL && check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] == false)
@@ -632,6 +632,101 @@ bool World::BFS(Maze::Node * curr_node)
     return false;
 }
 
+bool World::runGreedy()
+{
+    //refresh maze of old data
+    deleteWorld();
+    makeWorld(path);
+    if ((maze == NULL) || (start == NULL) || (check == NULL))
+        return false;
+    /*	maze->changeChar(start->getxyCord().x, start->getxyCord().y, 'a');
+     maze->changeChar(goal_coord.x, goal_coord.y, 'Y');*/
+    cout << "Given Maze:" << endl << maze->PrintMaze() << endl << endl;
+    
+    if (Greedy(start))
+    {
+        cout << "Solution Maze:" << endl;
+        printSol();
+        return true;
+    }
+    
+    cout << "No solution found" << endl;
+    
+    return false;
+
+}
+
+bool World::Greedy(Maze::Node *curr_node)
+{
+    
+    if (curr_node == NULL)
+        return false;
+    
+    vector<Maze::Node*> frontier;    //queue for BFS
+    
+    frontier.push_back(curr_node);	//add first node to queue
+    
+    while (!frontier.empty())
+    {
+        //sort queue
+        if((int)frontier.size() > 1) // if there is more than one element
+        {
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if(frontier[i +1]->getHuristicValue() > frontier[i]->getHuristicValue())
+                {
+                    int a =  frontier[i +1]->getHuristicValue();
+                    int b = frontier[i]->getHuristicValue();
+                    Maze::Node * temp = frontier[i +1];
+                    frontier[i +1] = frontier[i];
+                    frontier[i] = temp;
+                }
+            }
+        }
+        
+        
+        curr_node = frontier.back();
+        frontier.pop_back();  //update current node being looked at
+       
+        int xx = curr_node->getxyCord().x;
+        int yy = curr_node->getxyCord().y;
+        check[curr_node->getxyCord().x][curr_node->getxyCord().y] = true;	//mark node as visited
+        
+        maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
+        cout << maze->PrintMaze()<<endl<<endl<<endl;
+        
+        
+        //check for solution
+        if ((curr_node->getxyCord().x == goal_coord.x) && (curr_node->getxyCord().y == goal_coord.y))
+        {
+            endNode = curr_node;   //save coordinates of goal node
+            return true;
+        }
+        curr_node->expandNode();          //expand node to use children
+        expansions++;
+        
+        
+        
+        //if unexplored and not a wall, add it to the queue
+        if ((curr_node->getNorhChild() != NULL) && (check[curr_node->getNorhChild()->getxyCord().x][curr_node->getNorhChild()->getxyCord().y] == false))
+            frontier.push_back(curr_node->getNorhChild());
+        
+        if ((curr_node->getEastChild() != NULL) && (check[curr_node->getEastChild()->getxyCord().x][curr_node->getEastChild()->getxyCord().y] == false))
+            frontier.push_back(curr_node->getEastChild());
+        
+        if ((curr_node->getSouthChild() != NULL) && (check[curr_node->getSouthChild()->getxyCord().x][curr_node->getSouthChild()->getxyCord().y] == false))
+            frontier.push_back(curr_node->getSouthChild());
+        
+        if ((curr_node->getWestChild() != NULL) && (check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] == false))
+            frontier.push_back(curr_node->getWestChild());
+        
+       
+        
+    }
+    
+    return false;
+    
+}
 
 /*
 World::BFS(Node *node, Maze *maze)
