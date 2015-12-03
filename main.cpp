@@ -14,7 +14,7 @@ using namespace std;
 int main(int argc, const char * argv[]) {
     // insert code here...
     World temp("/Users/Erik/Documents/School/AI/MP1/MP1/input.txt");
-   // temp.runBFS();
+    //temp.runBFS();
     temp.runGreedy();
 
    

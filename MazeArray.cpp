@@ -136,7 +136,12 @@ void Maze::Node::expandNode()
             }
     
             if(parent == NULL)// if no parent (meanin root) add child
-                NorhChild = new Node(location.x,location.y-1, maze, this);
+            {
+                if(ghost)
+                    NorhChild = NULL;
+                else
+                    NorhChild = new Node(location.x,location.y-1, maze, this);
+            }
             
             else if(((parent->location.x == location.x ) && (parent->location.y == location.y-1)) || (ghost)  )//if node matches parent dont add or if there is a ghost dont add
                 NorhChild = NULL;
@@ -168,7 +173,12 @@ void Maze::Node::expandNode()
             }
             
             if(parent == NULL)
-                EastChild = new Node(location.x+1, location.y, maze, this );
+            {
+                if(ghost)
+                    EastChild = NULL;
+                else
+                    EastChild = new Node(location.x+1, location.y, maze, this );
+            }
         
             else if( ((parent->location.x == location.x+1 ) && (parent->location.y == location.y)) || (ghost)  )
                 EastChild = NULL;
@@ -199,7 +209,12 @@ void Maze::Node::expandNode()
             
             
             if(parent == NULL)
-                SouthChild = new Node (location.x, location.y +1, maze, this);
+            {
+                if(ghost)
+                    parent = NULL;
+                else
+                    SouthChild = new Node (location.x, location.y +1, maze, this);
+            }
         
             else if(((parent->location.x == location.x ) && (parent->location.y == location.y + 1)) || (ghost) )
                 SouthChild = NULL;
@@ -231,7 +246,12 @@ void Maze::Node::expandNode()
             
             
             if(parent == NULL)
-                WestChild = new Node(location.x -1,location.y, maze,this);
+            {
+                if(ghost)
+                    WestChild = NULL;
+                else
+                    WestChild = new Node(location.x -1,location.y, maze,this);
+            }
         
             else if(((parent->location.x == location.x - 1) && (parent->location.y == location.y)) || (ghost))
                 WestChild = NULL;
