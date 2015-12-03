@@ -717,10 +717,10 @@ bool World::Greedy(Maze::Node *curr_node)
         frontier.pop_back();  //update current node being looked at
        
         
-        /*
+        
         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
         cout << maze->PrintMaze()<<endl<<endl<<endl;
-         */
+         
          
         
         
@@ -756,7 +756,6 @@ bool World::Greedy(Maze::Node *curr_node)
             check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] = true;	//mark node as visited
         }
         
-        cout << "Ghost " << curr_node->currGhosts.size() << " " << curr_node->currGhosts.size() << endl;
         
     }
     
