@@ -56,11 +56,10 @@ void Maze::Node::expandNode()
     
     vector<Ghost> childGhosts;
     //get new ghosts
-    if(parent != NULL)
-    {
-        for (int i = 0; i < (int)parent->currGhosts.size(); i++)
+    
+        for (int i = 0; i < (int)currGhosts.size(); i++)
         {
-            Ghost temp = parent->currGhosts[i];
+            Ghost temp = currGhosts[i];
             
             if(temp.direction ==  0)// if moving left idk why i cannotuse macros here
             {
@@ -84,7 +83,7 @@ void Maze::Node::expandNode()
                     temp.pos.x = temp.pos.x + 1;
                     temp.pos.y = temp.pos.y;
                     
-                    temp.direction = (int)RIGHT;
+                    temp.direction = 1;
                 }
                 
             }
@@ -110,20 +109,21 @@ void Maze::Node::expandNode()
                     temp.pos.x = temp.pos.x - 1;
                     temp.pos.y = temp.pos.y;
                     
-                    temp.direction = (int)LEFT;
+                    temp.direction = 0;
                 }
             
             }
             childGhosts.push_back(temp);
         }
-    }
+    
+    cout << location.x << " " << location.y << endl;
     
     
     
     //get north child
     if( ((location.y -1) >= 0) ) // check if in bounds
     {
-        if(maze->getChar(location.x, location.y-1) != '%' )// no wall there
+        if( maze->getChar(location.x, location.y-1) != '%' )// no wall there
         {
             bool ghost = false;
             //if the child coresponds to ghost node then make it null
@@ -701,6 +701,7 @@ bool World::Greedy(Maze::Node *curr_node)
         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
         cout << maze->PrintMaze()<<endl<<endl<<endl;
          */
+         
         
         
         //check for solution
@@ -735,7 +736,7 @@ bool World::Greedy(Maze::Node *curr_node)
             check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] = true;	//mark node as visited
         }
         
-       
+        cout << "Ghost " << curr_node->currGhosts.size() << " " << curr_node->currGhosts.size() << endl;
         
     }
     
@@ -783,7 +784,7 @@ World::BFS(Node *node, Maze *maze)
             queue.push_back(curr_node->WestChild);    
         
     }
-   */
+ */
 void World::printSol()
 {
     if(endNode == NULL)
