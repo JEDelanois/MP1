@@ -518,12 +518,12 @@ bool World::runDFS()
     
     if(DFS(start))
     {
-        cout << "Solution Maze:" << endl;
+        cout << "DFS Solution Maze:" << endl;
         printSol();
         return true;
     }
     
-    cout << "No solution found"<< endl;
+    cout << "DFS No solution found"<< endl;
     
     return false;
     
@@ -585,12 +585,12 @@ bool World::runBFS()
     
     if (BFS(start))
     {
-        cout << "Solution Maze:" << endl;
+        cout << "BFS Solution Maze:" << endl;
         printSol();
         return true;
     }
     
-    cout << "No solution found" << endl;
+    cout << "BFS No solution found" << endl;
     
     return false;
 }
@@ -667,12 +667,12 @@ bool World::runGreedy()
 
     if (Greedy(start))
     {
-        cout << "Solution Maze:" << endl;
+        cout << "Greedy Solution Maze:" << endl;
         printSol();
         return true;
     }
     
-    cout << "No solution found" << endl;
+    cout << "Greedy No solution found" << endl;
     
     return false;
 
@@ -773,12 +773,12 @@ bool World::runAstar()
 
     if (Astar())
     {
-        cout << "Solution Maze:" << endl;
+        cout << "A* Solution Maze:" << endl;
         printSol();
         return true;
     }
     
-    cout << "No solution found" << endl;
+    cout << "A* No solution found" << endl;
     
     return false;
     
@@ -809,17 +809,7 @@ bool World::Astar()
         Maze::Node * curr_node = frontier.back();
         frontier.pop_back();  //update current node being looked at
         
-     cout << "Curr: " << curr_node->getxyCord().x << " " <<curr_node->getxyCord().y << " " << curr_node->getAstarValue() << " " << curr_node->height << "|" << endl;
-       
-        /*
-        cout << curr_node->getAstarValue() << endl;
-        cout << curr_node->getxyCord().x << " " << curr_node->getxyCord().y << endl ;
-         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
-        //maze->changeChar(curr_node->currGhosts[0].pos.x, curr_node->currGhosts[0].pos.y, 'G');
-         cout << maze->PrintMaze()<<endl<<endl<<endl;
-        maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, ' ');
-        //maze->changeChar(curr_node->currGhosts[0].pos.x, curr_node->currGhosts[0].pos.y, ' ');
-        */ 
+
         
         
         
@@ -838,8 +828,6 @@ bool World::Astar()
         if (curr_node->getNorhChild() != NULL){
             frontier.push_back(curr_node->getNorhChild());
             
-            cout << endl <<"N child: " << curr_node->getNorhChild()->getxyCord().x << " " <<curr_node->getNorhChild()->getxyCord().y << " " << curr_node->getNorhChild()->getAstarValue() << " " << curr_node->getNorhChild()->height << "|" ;
-            
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
@@ -847,8 +835,8 @@ bool World::Astar()
                     (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                     (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
-                   cout << "*";
-                    frontier.pop_back();
+                   
+                    frontier.pop_back();// if repeated state then remove it
                 }
             }
             
@@ -856,7 +844,6 @@ bool World::Astar()
         
         if (curr_node->getEastChild() != NULL){
             frontier.push_back(curr_node->getEastChild());
-            cout << endl << "E child: " << curr_node->getEastChild()->getxyCord().x << " " <<curr_node->getEastChild()->getxyCord().y << " " << curr_node->getEastChild()->getAstarValue()<< " " << curr_node->getEastChild()->height << "|";
             
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
@@ -865,16 +852,15 @@ bool World::Astar()
                    (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
-                    cout << "*";
-                    frontier.pop_back();
+                    
+                    frontier.pop_back();// if repeated state then remove it
                 }
             }
         }
         
         if (curr_node->getSouthChild() != NULL){
             frontier.push_back(curr_node->getSouthChild());
-            cout << endl << "S child: " << curr_node->getSouthChild()->getxyCord().x << " " <<curr_node->getSouthChild()->getxyCord().y << " " << curr_node->getSouthChild()->getAstarValue() << " " << curr_node->getSouthChild()->height << "|";
-        
+            
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
@@ -882,16 +868,15 @@ bool World::Astar()
                    (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
-                    cout << "*";
-                    frontier.pop_back();
+                
+                    frontier.pop_back();// if repeated state then remove it
                 }
             }
         }
         
         if (curr_node->getWestChild() != NULL){
             frontier.push_back(curr_node->getWestChild());
-            cout << endl <<"W child: " << curr_node->getWestChild()->getxyCord().x << " " <<curr_node->getWestChild()->getxyCord().y << " " << curr_node->getWestChild()->getAstarValue() << " " << curr_node->getWestChild()->height << "|";
-        
+            
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
@@ -899,14 +884,11 @@ bool World::Astar()
                    (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
-                    cout << "*";
-                    frontier.pop_back();
+                
+                    frontier.pop_back(); // if repeated state then remove it
                 }
             }
         }
-        cout << endl;
-        
-        cout << "___________________________________________" << endl;
         
         
         
