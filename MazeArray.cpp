@@ -19,6 +19,16 @@ Maze::Node::Node(int X, int Y, Maze * m, Node * p)
     maze = m;
     parent = p;
     Hvalue = abs(maze->getGoalLocation().x -X ) + abs(maze->getGoalLocation().y -Y);
+    
+    if(p == NULL)
+        height = 0;
+    else
+        height = p->height + 1;
+   
+   double value=  Astarval =  Hvalue +  height;
+    int temp;
+    temp++;
+    
 }
 
 Maze::Node::Node(xyCord loc, Maze * m, Node * p)
@@ -27,6 +37,18 @@ Maze::Node::Node(xyCord loc, Maze * m, Node * p)
     maze = m;;
     parent = p;
     Hvalue = abs(maze->getGoalLocation().x - loc.x ) + abs(maze->getGoalLocation().y - loc.y);
+    
+    if(p == NULL)
+        height = 0;
+    else
+        height = p->height + 1;
+    
+    Astarval = Hvalue + height;
+}
+
+int Maze::Node::getAstarValue()
+{
+    return Astarval;
 }
 
 int Maze::Node::getHuristicValue()
@@ -116,8 +138,6 @@ void Maze::Node::expandNode()
             childGhosts.push_back(temp);
         }
     
-    cout << location.x << " " << location.y << endl;
-    
     
     
     //get north child
@@ -135,15 +155,8 @@ void Maze::Node::expandNode()
                     ghost = true;
             }
     
-            if(parent == NULL)// if no parent (meanin root) add child
-            {
-                if(ghost)
-                    NorhChild = NULL;
-                else
-                    NorhChild = new Node(location.x,location.y-1, maze, this);
-            }
             
-            else if(((parent->location.x == location.x ) && (parent->location.y == location.y-1)) || (ghost)  )//if node matches parent dont add or if there is a ghost dont add
+            if(ghost  )//if node matches parent dont add or if there is a ghost dont add
                 NorhChild = NULL;
             
             else
@@ -172,15 +185,7 @@ void Maze::Node::expandNode()
                     ghost = true;
             }
             
-            if(parent == NULL)
-            {
-                if(ghost)
-                    EastChild = NULL;
-                else
-                    EastChild = new Node(location.x+1, location.y, maze, this );
-            }
-        
-            else if( ((parent->location.x == location.x+1 ) && (parent->location.y == location.y)) || (ghost)  )
+            if( ghost  )
                 EastChild = NULL;
             
             else
@@ -208,15 +213,7 @@ void Maze::Node::expandNode()
             }
             
             
-            if(parent == NULL)
-            {
-                if(ghost)
-                    parent = NULL;
-                else
-                    SouthChild = new Node (location.x, location.y +1, maze, this);
-            }
-        
-            else if(((parent->location.x == location.x ) && (parent->location.y == location.y + 1)) || (ghost) )
+            if(ghost)
                 SouthChild = NULL;
         
             else
@@ -245,15 +242,7 @@ void Maze::Node::expandNode()
             }
             
             
-            if(parent == NULL)
-            {
-                if(ghost)
-                    WestChild = NULL;
-                else
-                    WestChild = new Node(location.x -1,location.y, maze,this);
-            }
-        
-            else if(((parent->location.x == location.x - 1) && (parent->location.y == location.y)) || (ghost))
+            if(ghost)
                 WestChild = NULL;
         
             else
@@ -621,10 +610,10 @@ bool World::BFS(Maze::Node * curr_node)
         curr_node = queue.front();  //update current node being looked at
         queue.pop_front();
         
-        
+        /*
         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
         cout << maze->PrintMaze()<<endl<<endl<<endl;
-        
+        */
         
         //check for solution
         if ((curr_node->getxyCord().x == goal_coord.x) && (curr_node->getxyCord().y == goal_coord.y))
@@ -666,12 +655,16 @@ bool World::runGreedy()
     //refresh maze of old data
     deleteWorld();
     makeWorld(path);
+    
     if ((maze == NULL) || (start == NULL) || (check == NULL))
         return false;
     /*	maze->changeChar(start->getxyCord().x, start->getxyCord().y, 'a');
      maze->changeChar(goal_coord.x, goal_coord.y, 'Y');*/
     cout << "Given Maze:" << endl << maze->PrintMaze() << endl << endl;
     
+    frontier.resize(0);
+    frontier.push_back(start);
+
     if (Greedy(start))
     {
         cout << "Solution Maze:" << endl;
@@ -691,9 +684,8 @@ bool World::Greedy(Maze::Node *curr_node)
     if (curr_node == NULL)
         return false;
     
-    vector<Maze::Node*> frontier;    //queue for BFS
     
-    frontier.push_back(curr_node);	//add first node to queue
+    
     check[curr_node->getxyCord().x][curr_node->getxyCord().y] = true;
     
     while (!frontier.empty())
@@ -717,10 +709,10 @@ bool World::Greedy(Maze::Node *curr_node)
         frontier.pop_back();  //update current node being looked at
        
         
-        
+        /*
         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
         cout << maze->PrintMaze()<<endl<<endl<<endl;
-         
+         */
          
         
         
@@ -755,6 +747,162 @@ bool World::Greedy(Maze::Node *curr_node)
             frontier.push_back(curr_node->getWestChild());
             check[curr_node->getWestChild()->getxyCord().x][curr_node->getWestChild()->getxyCord().y] = true;	//mark node as visited
         }
+        
+        
+    }
+    
+    return false;
+    
+}
+
+
+bool World::runAstar()
+{
+    //refresh maze of old data
+    deleteWorld();
+    makeWorld(path);
+    
+    if ((maze == NULL) || (start == NULL) || (check == NULL))
+        return false;
+    /*	maze->changeChar(start->getxyCord().x, start->getxyCord().y, 'a');
+     maze->changeChar(goal_coord.x, goal_coord.y, 'Y');*/
+    cout << "Given Maze:" << endl << maze->PrintMaze() << endl << endl;
+    
+    frontier.resize(0);
+    frontier.push_back(start);
+
+    if (Astar())
+    {
+        cout << "Solution Maze:" << endl;
+        printSol();
+        return true;
+    }
+    
+    cout << "No solution found" << endl;
+    
+    return false;
+    
+}
+
+bool World::Astar()
+{
+    
+    
+    
+    while (!frontier.empty())
+    {
+        //sort queue
+        if((int)frontier.size() > 1) // if there is more than one element
+        {
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if(frontier[i + 1]->getAstarValue() > frontier[i]->getAstarValue())
+                {
+                    Maze::Node * temp = frontier[i +1];
+                    frontier[i +1] = frontier[i];
+                    frontier[i] = temp;
+                }
+            }
+        }
+        
+        
+        Maze::Node * curr_node = frontier.back();
+        frontier.pop_back();  //update current node being looked at
+        
+     cout << "Curr: " << curr_node->getxyCord().x << " " <<curr_node->getxyCord().y << " " << curr_node->getHuristicValue() << " " << curr_node->height << "|" << endl;
+       
+        /*
+        cout << curr_node->getAstarValue() << endl;
+        cout << curr_node->getxyCord().x << " " << curr_node->getxyCord().y << endl ;
+         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
+        //maze->changeChar(curr_node->currGhosts[0].pos.x, curr_node->currGhosts[0].pos.y, 'G');
+         cout << maze->PrintMaze()<<endl<<endl<<endl;
+        maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, ' ');
+        //maze->changeChar(curr_node->currGhosts[0].pos.x, curr_node->currGhosts[0].pos.y, ' ');
+        */ 
+        
+        
+        
+        //check for solution
+        if ((curr_node->getxyCord().x == goal_coord.x) && (curr_node->getxyCord().y == goal_coord.y))
+        {
+            endNode = curr_node;   //save coordinates of goal node
+            return true;
+        }
+        curr_node->expandNode();          //expand node to use children
+        expansions++;
+        
+        
+        
+        //if unexplored and not a wall, add it to the queue
+        if (curr_node->getNorhChild() != NULL){
+            frontier.push_back(curr_node->getNorhChild());
+            
+            cout << "N child: " << curr_node->getNorhChild()->getxyCord().x << " " <<curr_node->getNorhChild()->getxyCord().y << " " << curr_node->getNorhChild()->getHuristicValue() << " " << curr_node->getNorhChild()->height << "|" ;
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                    (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                    (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                   cout << "*";
+                }
+            }
+            
+        }
+        
+        if (curr_node->getEastChild() != NULL){
+            frontier.push_back(curr_node->getEastChild());
+            cout << "E child: " << curr_node->getEastChild()->getxyCord().x << " " <<curr_node->getEastChild()->getxyCord().y << " " << curr_node->getEastChild()->getHuristicValue()<< " " << curr_node->getEastChild()->height << "|";
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    cout << "*";
+                }
+            }
+        }
+        
+        if (curr_node->getSouthChild() != NULL){
+            frontier.push_back(curr_node->getSouthChild());
+            cout << "S child: " << curr_node->getSouthChild()->getxyCord().x << " " <<curr_node->getSouthChild()->getxyCord().y << " " << curr_node->getSouthChild()->getHuristicValue() << " " << curr_node->getSouthChild()->height << "|";
+        
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    cout << "*";
+                }
+            }
+        }
+        
+        if (curr_node->getWestChild() != NULL){
+            frontier.push_back(curr_node->getWestChild());
+            cout << "W child: " << curr_node->getWestChild()->getxyCord().x << " " <<curr_node->getWestChild()->getxyCord().y << " " << curr_node->getWestChild()->getHuristicValue() << " " << curr_node->getWestChild()->height << "|";
+        
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    cout << "*";
+                }
+            }
+        }
+        
+        cout << "___________________________________________" << endl;
+        
         
         
     }

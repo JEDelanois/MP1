@@ -78,10 +78,11 @@ public:
         bool isExpanded();
         
         int getHuristicValue();
+        int getAstarValue();
         
         int getGhostVal();
         
-        
+        int height = 0;
         
         vector<Ghost> currGhosts;
         
@@ -109,7 +110,8 @@ public:
         int ghostVal = (int)NG;
         
         int Hvalue;
-        int Astarval;
+        double Astarval;
+        
     };
     
     
@@ -165,6 +167,7 @@ public:
     bool runDFS();
     bool runBFS();
     bool runGreedy();
+    bool runAstar();
     int expansions;
     
 private:
@@ -173,6 +176,7 @@ private:
     bool DFS(Maze::Node * curr_node);//function for DFS on rest of nodes
     bool BFS(Maze::Node * curr_node);
     bool Greedy(Maze::Node * curr_node);
+    bool Astar();
     bool ** check;
     Maze * maze;
     xyCord goal_coord;
@@ -182,6 +186,7 @@ private:
     string path;
     void makeWorld(string s);
     void deleteWorld();
+    vector<Maze::Node*> frontier;
     
     
     
