@@ -503,6 +503,9 @@ void  World::deleteWorld()
         delete maze;
     if(start)
         delete start;
+    
+    endNode = NULL;
+    expansions = 0;
 }
 
 bool World::runDFS()
@@ -553,6 +556,7 @@ bool World::DFS(Maze::Node * curr_node)
     
     
     curr_node->expandNode();        //expand this node to get surrounding nodes
+    expansions++;
     
     //check children and if found return true
     if( DFS( curr_node->getNorhChild() ) )
@@ -957,7 +961,10 @@ void World::printSol()
         temp = temp->getParent();
     }
     
-    cout << maze->PrintMaze() << endl;
+    cout << maze->PrintMaze();
+    
+    if(endNode != NULL)
+        cout << "Path Distance: " << endNode->height << endl << "Expanded Nodes: " << expansions << endl << endl;;
     
     
 }

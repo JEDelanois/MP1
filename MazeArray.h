@@ -168,7 +168,7 @@ public:
     bool runBFS();
     bool runGreedy();
     bool runAstar();
-    int expansions;
+    int expansions = 0;
     
 private:
     
@@ -180,8 +180,8 @@ private:
     bool ** check;
     Maze * maze;
     xyCord goal_coord;
-    Maze::Node * start;
-    Maze::Node * endNode;
+    Maze::Node * start = NULL;
+    Maze::Node * endNode = NULL;
     
     string path;
     void makeWorld(string s);
