@@ -83,6 +83,7 @@ public:
         int getGhostVal();
         int getForwardCost();
         int getTurnCost();
+    
         
         int height = 0;
         
@@ -173,6 +174,9 @@ public:
     bool runBFS();
     bool runGreedy();
     bool runAstar();
+    bool RunTurn();
+    bool RunFoward();
+    
     int expansions = 0;
     
 private:
@@ -182,6 +186,8 @@ private:
     bool BFS(Maze::Node * curr_node);
     bool Greedy(Maze::Node * curr_node);
     bool Astar();
+    bool Turn();
+    bool Forward();
     bool ** check;
     Maze * maze;
     xyCord goal_coord;

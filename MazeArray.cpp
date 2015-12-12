@@ -1114,6 +1114,291 @@ bool World::Astar()
     
 }
 
+bool World::RunTurn()
+{
+    //refresh maze of old data
+    deleteWorld();
+    makeWorld(path);
+    
+    if ((maze == NULL) || (start == NULL) || (check == NULL))
+        return false;
+    /*	maze->changeChar(start->getxyCord().x, start->getxyCord().y, 'a');
+     maze->changeChar(goal_coord.x, goal_coord.y, 'Y');*/
+    cout << "Given Maze:" << endl << maze->PrintMaze() << endl << endl;
+    
+    frontier.resize(0);
+    frontier.push_back(start);
+    
+    if (Turn())
+    {
+        cout << "Turn Solution Maze:" << endl;
+        printSol();
+        return true;
+    }
+    
+    cout << "Turn No solution found" << endl;
+    
+    return false;
+    
+}
+
+bool World::Turn()
+{
+    
+    
+    
+    while (!frontier.empty())
+    {
+        //sort queue
+        if((int)frontier.size() > 1) // if there is more than one element
+        {
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if((frontier[i + 1]->getAstarValue() + frontier[i + 1]->getTurnCost()) > (frontier[i]->getAstarValue() + frontier[i]->getTurnCost()  ) )
+                {
+                    Maze::Node * temp = frontier[i +1];
+                    frontier[i +1] = frontier[i];
+                    frontier[i] = temp;
+                }
+            }
+        }
+        
+        
+        Maze::Node * curr_node = frontier.back();
+        frontier.pop_back();  //update current node being looked at
+        
+        
+        
+        
+        
+        //check for solution
+        if ((curr_node->getxyCord().x == goal_coord.x) && (curr_node->getxyCord().y == goal_coord.y))
+        {
+            endNode = curr_node;   //save coordinates of goal node
+            return true;
+        }
+        curr_node->expandNode();          //expand node to use children
+        expansions++;
+        
+        
+        
+        //if unexplored and not a wall, add it to the queue
+        if (curr_node->getNorhChild() != NULL){
+            frontier.push_back(curr_node->getNorhChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back();// if repeated state then remove it
+                }
+            }
+            
+        }
+        
+        if (curr_node->getEastChild() != NULL){
+            frontier.push_back(curr_node->getEastChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back();// if repeated state then remove it
+                }
+            }
+        }
+        
+        if (curr_node->getSouthChild() != NULL){
+            frontier.push_back(curr_node->getSouthChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back();// if repeated state then remove it
+                }
+            }
+        }
+        
+        if (curr_node->getWestChild() != NULL){
+            frontier.push_back(curr_node->getWestChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back(); // if repeated state then remove it
+                }
+            }
+        }
+        
+        
+        
+    }
+    
+    return false;
+    
+}
+
+bool World::RunFoward()
+{
+    //refresh maze of old data
+    deleteWorld();
+    makeWorld(path);
+    
+    if ((maze == NULL) || (start == NULL) || (check == NULL))
+        return false;
+    /*	maze->changeChar(start->getxyCord().x, start->getxyCord().y, 'a');
+     maze->changeChar(goal_coord.x, goal_coord.y, 'Y');*/
+    cout << "Given Maze:" << endl << maze->PrintMaze() << endl << endl;
+    
+    frontier.resize(0);
+    frontier.push_back(start);
+    
+    if (Forward())
+    {
+        cout << "Forward Solution Maze:" << endl;
+        printSol();
+        return true;
+    }
+    
+    cout << "Forward No solution found" << endl;
+    
+    return false;
+    
+}
+
+bool World::Forward()
+{
+    
+    
+    
+    while (!frontier.empty())
+    {
+        //sort queue
+        if((int)frontier.size() > 1) // if there is more than one element
+        {
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if((frontier[i + 1]->getAstarValue() + frontier[i + 1]->getForwardCost()) > (frontier[i]->getAstarValue() + frontier[i]->getForwardCost()  ) )
+                {
+                    Maze::Node * temp = frontier[i +1];
+                    frontier[i +1] = frontier[i];
+                    frontier[i] = temp;
+                }
+            }
+        }
+        
+        
+        Maze::Node * curr_node = frontier.back();
+        frontier.pop_back();  //update current node being looked at
+        
+        
+        
+        
+        
+        //check for solution
+        if ((curr_node->getxyCord().x == goal_coord.x) && (curr_node->getxyCord().y == goal_coord.y))
+        {
+            endNode = curr_node;   //save coordinates of goal node
+            return true;
+        }
+        curr_node->expandNode();          //expand node to use children
+        expansions++;
+        
+        
+        
+        //if unexplored and not a wall, add it to the queue
+        if (curr_node->getNorhChild() != NULL){
+            frontier.push_back(curr_node->getNorhChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back();// if repeated state then remove it
+                }
+            }
+            
+        }
+        
+        if (curr_node->getEastChild() != NULL){
+            frontier.push_back(curr_node->getEastChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back();// if repeated state then remove it
+                }
+            }
+        }
+        
+        if (curr_node->getSouthChild() != NULL){
+            frontier.push_back(curr_node->getSouthChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back();// if repeated state then remove it
+                }
+            }
+        }
+        
+        if (curr_node->getWestChild() != NULL){
+            frontier.push_back(curr_node->getWestChild());
+            
+            for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
+            {
+                if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                {
+                    
+                    frontier.pop_back(); // if repeated state then remove it
+                }
+            }
+        }
+        
+        
+        
+    }
+    
+    return false;
+    
+}
+
+
 /*
  World::BFS(Node *node, Maze *maze)
  {

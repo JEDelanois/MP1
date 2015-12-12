@@ -17,8 +17,9 @@ int main(int argc, const char * argv[]) {
     //temp.runDFS();
     //temp.runBFS();
     //temp.runGreedy();
-    temp.runAstar();
-
+    //temp.runAstar();
+    temp.RunTurn();
+    temp.RunFoward();
    
     return 0;
     
