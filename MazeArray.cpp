@@ -25,7 +25,7 @@ Maze::Node::Node(int X, int Y, Maze * m, Node * p)
     else
         height = p->height + 1;
    
-   double value=  Astarval =  Hvalue +  height;
+   double value=  Astarval =  (Hvalue +  height);
     int temp;
     temp++;
     
@@ -43,7 +43,7 @@ Maze::Node::Node(xyCord loc, Maze * m, Node * p)
     else
         height = p->height + 1;
     
-    Astarval = Hvalue + height;
+    Astarval = (Hvalue + height);
 }
 
 int Maze::Node::getAstarValue()
@@ -809,7 +809,7 @@ bool World::Astar()
         Maze::Node * curr_node = frontier.back();
         frontier.pop_back();  //update current node being looked at
         
-     cout << "Curr: " << curr_node->getxyCord().x << " " <<curr_node->getxyCord().y << " " << curr_node->getHuristicValue() << " " << curr_node->height << "|" << endl;
+     cout << "Curr: " << curr_node->getxyCord().x << " " <<curr_node->getxyCord().y << " " << curr_node->getAstarValue() << " " << curr_node->height << "|" << endl;
        
         /*
         cout << curr_node->getAstarValue() << endl;
@@ -838,16 +838,17 @@ bool World::Astar()
         if (curr_node->getNorhChild() != NULL){
             frontier.push_back(curr_node->getNorhChild());
             
-            cout << "N child: " << curr_node->getNorhChild()->getxyCord().x << " " <<curr_node->getNorhChild()->getxyCord().y << " " << curr_node->getNorhChild()->getHuristicValue() << " " << curr_node->getNorhChild()->height << "|" ;
+            cout << endl <<"N child: " << curr_node->getNorhChild()->getxyCord().x << " " <<curr_node->getNorhChild()->getxyCord().y << " " << curr_node->getNorhChild()->getAstarValue() << " " << curr_node->getNorhChild()->height << "|" ;
             
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
                     (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
-                    (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                    (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                     (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
                    cout << "*";
+                    frontier.pop_back();
                 }
             }
             
@@ -855,51 +856,55 @@ bool World::Astar()
         
         if (curr_node->getEastChild() != NULL){
             frontier.push_back(curr_node->getEastChild());
-            cout << "E child: " << curr_node->getEastChild()->getxyCord().x << " " <<curr_node->getEastChild()->getxyCord().y << " " << curr_node->getEastChild()->getHuristicValue()<< " " << curr_node->getEastChild()->height << "|";
+            cout << endl << "E child: " << curr_node->getEastChild()->getxyCord().x << " " <<curr_node->getEastChild()->getxyCord().y << " " << curr_node->getEastChild()->getAstarValue()<< " " << curr_node->getEastChild()->height << "|";
             
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
                    (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
-                   (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
                     cout << "*";
+                    frontier.pop_back();
                 }
             }
         }
         
         if (curr_node->getSouthChild() != NULL){
             frontier.push_back(curr_node->getSouthChild());
-            cout << "S child: " << curr_node->getSouthChild()->getxyCord().x << " " <<curr_node->getSouthChild()->getxyCord().y << " " << curr_node->getSouthChild()->getHuristicValue() << " " << curr_node->getSouthChild()->height << "|";
+            cout << endl << "S child: " << curr_node->getSouthChild()->getxyCord().x << " " <<curr_node->getSouthChild()->getxyCord().y << " " << curr_node->getSouthChild()->getAstarValue() << " " << curr_node->getSouthChild()->height << "|";
         
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
                    (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
-                   (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
                     cout << "*";
+                    frontier.pop_back();
                 }
             }
         }
         
         if (curr_node->getWestChild() != NULL){
             frontier.push_back(curr_node->getWestChild());
-            cout << "W child: " << curr_node->getWestChild()->getxyCord().x << " " <<curr_node->getWestChild()->getxyCord().y << " " << curr_node->getWestChild()->getHuristicValue() << " " << curr_node->getWestChild()->height << "|";
+            cout << endl <<"W child: " << curr_node->getWestChild()->getxyCord().x << " " <<curr_node->getWestChild()->getxyCord().y << " " << curr_node->getWestChild()->getAstarValue() << " " << curr_node->getWestChild()->height << "|";
         
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
                    (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
-                   (frontier[(int)frontier.size()-1]->getHuristicValue() == frontier[i]->getHuristicValue()) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
                     cout << "*";
+                    frontier.pop_back();
                 }
             }
         }
+        cout << endl;
         
         cout << "___________________________________________" << endl;
         
