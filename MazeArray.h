@@ -52,7 +52,7 @@ class Maze // needs copy constructor but that functionality will not be used so 
 {
 public:
     
-
+    
     class Node// no copy consturctor or assignment operator needed becuase all attributs are assigend by value
     {           // all the pointers of the cildren will be copied aswell important to note
     public:
@@ -81,6 +81,8 @@ public:
         int getAstarValue();
         
         int getGhostVal();
+        int getForwardCost();
+        int getTurnCost();
         
         int height = 0;
         
@@ -100,6 +102,9 @@ public:
         Node * SouthChild = NULL;
         Node * WestChild = NULL;
         
+        char curdir;
+        int forwardCost;
+        int turnCost;
         
         //expanded chedk
         bool isexpanded = false;
@@ -158,7 +163,7 @@ private:
 class World
 {
     
-
+    
     
 public:
     World(string s);
@@ -193,4 +198,3 @@ private:
 };
 
 #endif /* defined(__MP1__MazeArray__) */
-

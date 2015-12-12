@@ -6,6 +6,12 @@
 //  Copyright (c) 2015 Erik. All rights reserved.
 //
 
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cmath>
+#include <list>
+#include <string>
 #include "MazeArray.h"
 using namespace std;
 
@@ -18,17 +24,114 @@ Maze::Node::Node(int X, int Y, Maze * m, Node * p)
     location.y = Y;
     maze = m;
     parent = p;
-    Hvalue = abs(maze->getGoalLocation().x -X ) + abs(maze->getGoalLocation().y -Y);
+    Hvalue = abs(maze->getGoalLocation().x - X) + abs(maze->getGoalLocation().y - Y);
     
-    if(p == NULL)
+    if (p == NULL)
+    {
         height = 0;
+        turnCost = 0;
+        forwardCost = 0;
+        curdir = 'e';
+        cout << "initial cost" << turnCost << endl;
+        cout << "initial direction: " << curdir << endl;
+        
+    }
     else
+    {
         height = p->height + 1;
-   
-   double value=  Astarval =  (Hvalue +  height);
-    int temp;
-    temp++;
+        
+        //find which direction you're currently going
+        if (p->getxyCord().x < getxyCord().x)
+        {
+            curdir = 'e';
+        }
+        else if (p->getxyCord().x > getxyCord().x)
+        {
+            curdir = 'w';
+        }
+        else if (p->getxyCord().y < getxyCord().y)
+        {
+            curdir = 's';
+        }
+        else if (p->getxyCord().y > getxyCord().y)
+        {
+            curdir = 'n';
+        }
+        
+        
+        //Update cost based on which direction you're headed
+        //cout << "Turn Cost" << turnCost << endl;
+        //East
+        if (curdir == 'e' && p->curdir == 'e')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        else if (curdir == 'e' && p->curdir == 'w')	//backward (two turns and a move forward)
+        {
+            turnCost = 5 + p->turnCost; //(2+2+1)
+            forwardCost = 4 + p->forwardCost; //(1+1+2)
+        }
+        else if (curdir == 'e' && p->curdir == 'n' || curdir == 'e' && p->curdir == 's')	//turn
+        {
+            turnCost = 3 + p->turnCost;	//one turn, one move forward
+            forwardCost = 3 + p->forwardCost;
+        }
+        //West
+        else if (curdir == 'w' && p->curdir == 'e')	// backward
+        {
+            turnCost = 5 + p->turnCost; //2+2+1
+            forwardCost = 4 + p->forwardCost; //1+1+2
+        }
+        else if (curdir == 'w' && p->curdir == 'w')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        else if (curdir == 'w' && p->curdir == 's' || curdir == 'w' && p->curdir == 'n')	//turn
+        {
+            turnCost = 3 + p->turnCost;
+            forwardCost = 3 + p->forwardCost;
+        }
+        //North
+        else if (curdir == 'n' && p->curdir == 'e' || curdir == 'n' && p->curdir == 'w')	//turn
+        {
+            turnCost = 3 + p->turnCost;
+            forwardCost = 3 + p->forwardCost;
+        }
+        else if (curdir == 'n' && p->curdir == 's')	//backward
+        {
+            turnCost = 5 + p->turnCost;
+            forwardCost = 4 + p->forwardCost;
+        }
+        else if (curdir == 'n' && p->curdir == 'n')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        //South
+        else if (curdir == 's' && p->curdir == 'e' || curdir == 's' && p->curdir == 'w')	//turn
+        {
+            turnCost = 3 + p->turnCost;
+            forwardCost = 3 + p->forwardCost;
+        }
+        else if (curdir == 's' && p->curdir == 'n')	//backward
+        {
+            turnCost = 5 + p->turnCost;
+            forwardCost = 4 + p->forwardCost;
+        }
+        else if (curdir == 's' && p->curdir == 's')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        //cout << "Current Direction " << curdir << endl;
+        //cout << "turn cost: "<< turnCost << endl;
+        //cout << "forward cost: " << forwardCost << endl << endl << endl ;
+        
+    }
     
+    double value = Astarval = (Hvalue + height);
 }
 
 Maze::Node::Node(xyCord loc, Maze * m, Node * p)
@@ -36,14 +139,113 @@ Maze::Node::Node(xyCord loc, Maze * m, Node * p)
     location = loc;
     maze = m;;
     parent = p;
-    Hvalue = abs(maze->getGoalLocation().x - loc.x ) + abs(maze->getGoalLocation().y - loc.y);
+    Hvalue = abs(maze->getGoalLocation().x - loc.x) + abs(maze->getGoalLocation().y - loc.y);
     
-    if(p == NULL)
+    if (p == NULL)
+    {
         height = 0;
-    else
-        height = p->height + 1;
+        turnCost = 0;
+        forwardCost = 0;
+        curdir = 'e';
+    }
     
+    else
+    {
+        //(not used)
+        height = p->height + 1;
+        
+        //find which direction you're currently going
+        if (p->getxyCord().x < getxyCord().x)
+        {
+            curdir == 'e';
+            cout << "cur direction: " << curdir << endl;
+        }
+        else if (p->getxyCord().x > getxyCord().x)
+        {
+            curdir == 'w';
+            cout << "cur direction: " << curdir << endl;
+        }
+        else if (p->getxyCord().y < getxyCord().y)
+        {
+            curdir == 's';
+            cout << "cur direction: " << curdir << endl;
+        }
+        else if (p->getxyCord().y > getxyCord().y)
+        {
+            curdir == 'n';
+            cout << "cur direction: " << curdir << endl;
+        }
+        
+        //Update cost based on which direction you're headed
+        cout << "Turn Cost" << turnCost << endl;
+        //East
+        if (curdir == 'e' && p->curdir == 'e')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        else if (curdir == 'e' && p->curdir == 'w')	//backward (two turns and a move forward)
+        {
+            turnCost = 5 + p->turnCost; //(2+2+1)
+            forwardCost = 4 + p->forwardCost; //(1+1+2)
+        }
+        else if (curdir == 'e' && p->curdir == 'n' || curdir == 'e' && p->curdir == 's')	//turn
+        {
+            turnCost = 3 + p->turnCost;	//one turn, one move forward
+            forwardCost = 3 + p->forwardCost;
+        }
+        //West
+        else if (curdir == 'w' && p->curdir == 'e')	// backward
+        {
+            turnCost = 5 + p->turnCost; //2+2+1
+            forwardCost = 4 + p->forwardCost; //1+1+2
+        }
+        else if (curdir == 'w' && p->curdir == 'w')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        else if (curdir == 'w' && p->curdir == 's' || curdir == 'w' && p->curdir == 'n')	//turn
+        {
+            turnCost = 3 + p->turnCost;
+            forwardCost = 3 + p->forwardCost;
+        }
+        //North
+        else if (curdir == 'n' && p->curdir == 'e' || curdir == 'n' && p->curdir == 'w')	//turn
+        {
+            turnCost = 3 + p->turnCost;
+            forwardCost = 3 + p->forwardCost;
+        }
+        else if (curdir == 'n' && p->curdir == 's')	//backward
+        {
+            turnCost = 5 + p->turnCost;
+            forwardCost = 4 + p->forwardCost;
+        }
+        else if (curdir == 'n' && p->curdir == 'n')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        //South
+        else if (curdir == 's' && p->curdir == 'e' || curdir == 's' && p->curdir == 'w')	//turn
+        {
+            turnCost = 3 + p->turnCost;
+            forwardCost = 3 + p->forwardCost;
+        }
+        else if (curdir == 's' && p->curdir == 'n')	//backward
+        {
+            turnCost = 5 + p->turnCost;
+            forwardCost = 4 + p->forwardCost;
+        }
+        else if (curdir == 's' && p->curdir == 's')	//forward
+        {
+            turnCost = 1 + p->turnCost;
+            forwardCost = 2 + p->forwardCost;
+        }
+        
+    }
     Astarval = (Hvalue + height);
+    
 }
 
 int Maze::Node::getAstarValue()
@@ -79,64 +281,64 @@ void Maze::Node::expandNode()
     vector<Ghost> childGhosts;
     //get new ghosts
     
-        for (int i = 0; i < (int)currGhosts.size(); i++)
+    for (int i = 0; i < (int)currGhosts.size(); i++)
+    {
+        Ghost temp = currGhosts[i];
+        
+        if(temp.direction ==  0)// if moving left idk why i cannotuse macros here
         {
-            Ghost temp = currGhosts[i];
-            
-            if(temp.direction ==  0)// if moving left idk why i cannotuse macros here
+            if(maze->getChar(temp.pos.x - 1, temp.pos.y) != '%')// if not a wall then continue in that direction
             {
-                if(maze->getChar(temp.pos.x - 1, temp.pos.y) != '%')// if not a wall then continue in that direction
-                {
-                    //save last location
-                    temp.lastpos.x = temp.pos.x;
-                    temp.lastpos.y = temp.pos.y;
-                    
-                    //move to new location
-                    temp.pos.x = temp.pos.x - 1;
-                    temp.pos.y = temp.pos.y;
-                }
-                else{//flip directions
-                    
-                    //save last location
-                    temp.lastpos.x = temp.pos.x;
-                    temp.lastpos.y = temp.pos.y;
-                    
-                    //move to new location
-                    temp.pos.x = temp.pos.x + 1;
-                    temp.pos.y = temp.pos.y;
-                    
-                    temp.direction = 1;
-                }
+                //save last location
+                temp.lastpos.x = temp.pos.x;
+                temp.lastpos.y = temp.pos.y;
                 
+                //move to new location
+                temp.pos.x = temp.pos.x - 1;
+                temp.pos.y = temp.pos.y;
             }
-            else{ //else if moving right
-            
-                if(maze->getChar(temp.pos.x + 1, temp.pos.y) != '%')// if not a wall then continue in that direction
-                {
-                    //save last location
-                    temp.lastpos.x = temp.pos.x;
-                    temp.lastpos.y = temp.pos.y;
-                    
-                    //move to new location
-                    temp.pos.x = temp.pos.x + 1;
-                    temp.pos.y = temp.pos.y;
-                }
-                else{//flip directions
-                    
-                    //save last location
-                    temp.lastpos.x = temp.pos.x;
-                    temp.lastpos.y = temp.pos.y;
-                    
-                    //move to new location
-                    temp.pos.x = temp.pos.x - 1;
-                    temp.pos.y = temp.pos.y;
-                    
-                    temp.direction = 0;
-                }
-            
+            else{//flip directions
+                
+                //save last location
+                temp.lastpos.x = temp.pos.x;
+                temp.lastpos.y = temp.pos.y;
+                
+                //move to new location
+                temp.pos.x = temp.pos.x + 1;
+                temp.pos.y = temp.pos.y;
+                
+                temp.direction = 1;
             }
-            childGhosts.push_back(temp);
+            
         }
+        else{ //else if moving right
+            
+            if(maze->getChar(temp.pos.x + 1, temp.pos.y) != '%')// if not a wall then continue in that direction
+            {
+                //save last location
+                temp.lastpos.x = temp.pos.x;
+                temp.lastpos.y = temp.pos.y;
+                
+                //move to new location
+                temp.pos.x = temp.pos.x + 1;
+                temp.pos.y = temp.pos.y;
+            }
+            else{//flip directions
+                
+                //save last location
+                temp.lastpos.x = temp.pos.x;
+                temp.lastpos.y = temp.pos.y;
+                
+                //move to new location
+                temp.pos.x = temp.pos.x - 1;
+                temp.pos.y = temp.pos.y;
+                
+                temp.direction = 0;
+            }
+            
+        }
+        childGhosts.push_back(temp);
+    }
     
     
     
@@ -154,7 +356,7 @@ void Maze::Node::expandNode()
                 else if((childGhosts[i].lastpos.x == location.x) && (childGhosts[i].lastpos.y == location.y-1) )
                     ghost = true;
             }
-    
+            
             
             if(ghost  )//if node matches parent dont add or if there is a ghost dont add
                 NorhChild = NULL;
@@ -215,7 +417,7 @@ void Maze::Node::expandNode()
             
             if(ghost)
                 SouthChild = NULL;
-        
+            
             else
                 SouthChild = new Node (location.x, location.y +1, maze, this);
             
@@ -223,7 +425,7 @@ void Maze::Node::expandNode()
             if(SouthChild != NULL)
                 SouthChild->currGhosts = childGhosts;
         }
-
+        
     }
     
     //get west child
@@ -244,7 +446,7 @@ void Maze::Node::expandNode()
             
             if(ghost)
                 WestChild = NULL;
-        
+            
             else
                 WestChild = new Node(location.x -1,location.y, maze,this);
             
@@ -295,6 +497,16 @@ int Maze::Node::getGhostVal()
 {
     return ghostVal;
 }
+int Maze::Node::getForwardCost()
+{
+    return forwardCost;
+}
+
+int Maze::Node::getTurnCost()
+{
+    return turnCost;
+}
+
 
 
 
@@ -306,13 +518,13 @@ void Maze::Node::deleteme()
     
     if(EastChild != NULL)
         delete EastChild;
-
+    
     if(SouthChild != NULL)
         delete SouthChild;
-
+    
     if(WestChild != NULL)
         delete WestChild;
-
+    
 }
 
 
@@ -379,7 +591,7 @@ Maze::Maze(string pathname)
     }
     
     
-
+    
 }
 
 
@@ -427,8 +639,8 @@ Maze::Node * Maze::getStartNode()
     
     
     return temp;
-
-
+    
+    
     
 }
 
@@ -441,8 +653,8 @@ xyCord Maze::getGoalLocation()
 
 bool Maze::changeChar(int x, int y, char c)
 {
-   if((x<0)||(x>=Xsize)||(y < 0)||(y >= Ysize))
-       return false;
+    if((x<0)||(x>=Xsize)||(y < 0)||(y >= Ysize))
+        return false;
     
     cMap[y][x] = c;
     
@@ -560,7 +772,7 @@ bool World::DFS(Maze::Node * curr_node)
     
     //check children and if found return true
     if( DFS( curr_node->getNorhChild() ) )
-       return true;
+        return true;
     
     if( DFS( curr_node->getEastChild() ) )
         return true;
@@ -615,9 +827,9 @@ bool World::BFS(Maze::Node * curr_node)
         queue.pop_front();
         
         /*
-        maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
-        cout << maze->PrintMaze()<<endl<<endl<<endl;
-        */
+         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
+         cout << maze->PrintMaze()<<endl<<endl<<endl;
+         */
         
         //check for solution
         if ((curr_node->getxyCord().x == goal_coord.x) && (curr_node->getxyCord().y == goal_coord.y))
@@ -668,7 +880,7 @@ bool World::runGreedy()
     
     frontier.resize(0);
     frontier.push_back(start);
-
+    
     if (Greedy(start))
     {
         cout << "Greedy Solution Maze:" << endl;
@@ -679,7 +891,7 @@ bool World::runGreedy()
     cout << "Greedy No solution found" << endl;
     
     return false;
-
+    
 }
 
 bool World::Greedy(Maze::Node *curr_node)
@@ -711,13 +923,13 @@ bool World::Greedy(Maze::Node *curr_node)
         
         curr_node = frontier.back();
         frontier.pop_back();  //update current node being looked at
-       
+        
         
         /*
-        maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
-        cout << maze->PrintMaze()<<endl<<endl<<endl;
+         maze->changeChar(curr_node->getxyCord().x, curr_node->getxyCord().y, '.');
+         cout << maze->PrintMaze()<<endl<<endl<<endl;
          */
-         
+        
         
         
         //check for solution
@@ -774,7 +986,7 @@ bool World::runAstar()
     
     frontier.resize(0);
     frontier.push_back(start);
-
+    
     if (Astar())
     {
         cout << "A* Solution Maze:" << endl;
@@ -813,7 +1025,7 @@ bool World::Astar()
         Maze::Node * curr_node = frontier.back();
         frontier.pop_back();  //update current node being looked at
         
-
+        
         
         
         
@@ -835,11 +1047,11 @@ bool World::Astar()
             for(int i = 0; i < (int)frontier.size() - 1; i++) // this gets the node with the smallest hurisic valute
             {
                 if( (frontier[(int)frontier.size()-1]->getxyCord().x == frontier[i]->getxyCord().x) &&
-                    (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
-                    (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
-                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
+                   (frontier[(int)frontier.size()-1]->getxyCord().y == frontier[i]->getxyCord().y) &&
+                   (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
+                   (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
-                   
+                    
                     frontier.pop_back();// if repeated state then remove it
                 }
             }
@@ -872,7 +1084,7 @@ bool World::Astar()
                    (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
-                
+                    
                     frontier.pop_back();// if repeated state then remove it
                 }
             }
@@ -888,7 +1100,7 @@ bool World::Astar()
                    (frontier[(int)frontier.size()-1]->getAstarValue() == frontier[i]->getAstarValue()) &&
                    (frontier[(int)frontier.size()-1]->height == frontier[i]->height) )
                 {
-                
+                    
                     frontier.pop_back(); // if repeated state then remove it
                 }
             }
@@ -903,45 +1115,45 @@ bool World::Astar()
 }
 
 /*
-World::BFS(Node *node, Maze *maze)
-{
-    
-    //adjaceny list of size of possible nodes in maze
-    Node *curr_node;
-    list<Node*> queue;    //queue for BFS
-    
-    node->explored = 1;       //current node has been explored
-    queue.push_back(node);
-    
-    list<Node*>::iterator i;
-    while(!queue.empty())
-    {
-        curr_node = queue.front();  //update current node being looked at
-        
-        //check for solution
-        if(curr_node->location.x, curr_node->location.y) == '.')
-        {
-            curr_node->correct_path = 1;
-            world->goal_coords = curr_node->location;
-            break;
-        }
-        curr_node->expand_node;          //expand node to use children
-        queue.pop_front();
-        
-        //if unexplored and not a wall, add it to the queue
-        if(curr_node->NorthChild.explored == 0 && maze.getChar(curr_node->NorthChild.location.x, curr_node->NorthChild.location.y) != '%')
-            queue.push_back(curr_node->NorthChild);
-        
-        if(curr_node->EastChild.explored == 0 && maze.getChar(curr_node->EastChild.location.x, curr_node->EastChild.location.y) != '%')
-            queue.push_back(curr_node->EastChild);
-        
-        if(curr_node->SouthChild.explored == 0 && maze.getChar(curr_node->SouthChild.location.x, curr_node->SouthChild.location.y) != '%')
-            queue.push_back(curr_node->SouthChild);
-        
-        if(curr_node->WestChild.explored == 0 && maze.getChar(curr_node->WestChild.location.x, curr_node->WestChild.location.y) != '%')
-            queue.push_back(curr_node->WestChild);    
-        
-    }
+ World::BFS(Node *node, Maze *maze)
+ {
+ 
+ //adjaceny list of size of possible nodes in maze
+ Node *curr_node;
+ list<Node*> queue;    //queue for BFS
+ 
+ node->explored = 1;       //current node has been explored
+ queue.push_back(node);
+ 
+ list<Node*>::iterator i;
+ while(!queue.empty())
+ {
+ curr_node = queue.front();  //update current node being looked at
+ 
+ //check for solution
+ if(curr_node->location.x, curr_node->location.y) == '.')
+ {
+ curr_node->correct_path = 1;
+ world->goal_coords = curr_node->location;
+ break;
+ }
+ curr_node->expand_node;          //expand node to use children
+ queue.pop_front();
+ 
+ //if unexplored and not a wall, add it to the queue
+ if(curr_node->NorthChild.explored == 0 && maze.getChar(curr_node->NorthChild.location.x, curr_node->NorthChild.location.y) != '%')
+ queue.push_back(curr_node->NorthChild);
+ 
+ if(curr_node->EastChild.explored == 0 && maze.getChar(curr_node->EastChild.location.x, curr_node->EastChild.location.y) != '%')
+ queue.push_back(curr_node->EastChild);
+ 
+ if(curr_node->SouthChild.explored == 0 && maze.getChar(curr_node->SouthChild.location.x, curr_node->SouthChild.location.y) != '%')
+ queue.push_back(curr_node->SouthChild);
+ 
+ if(curr_node->WestChild.explored == 0 && maze.getChar(curr_node->WestChild.location.x, curr_node->WestChild.location.y) != '%')
+ queue.push_back(curr_node->WestChild);    
+ 
+ }
  */
 void World::printSol()
 {
@@ -963,14 +1175,15 @@ void World::printSol()
     
     cout << maze->PrintMaze();
     
-    if(endNode != NULL)
-        cout << "Path Distance: " << endNode->height << endl << "Expanded Nodes: " << expansions << endl << endl;;
+    if (endNode != NULL)
+    {
+        cout << "Path Distance: " << endNode->height << endl << "Expanded Nodes: " << expansions << endl << endl;
+        cout << "Forward Cost: " << endNode->getForwardCost() << endl;
+        cout << "Turn Cost: " << endNode->getTurnCost() << endl;
+    }
     
     
 }
-
-
-
 
 
 
